@@ -1,20 +1,60 @@
 //Dependencies
 var keys = require("./keys.js");
 var fs = require("fs");
+var request = require("request");
+var Twitter = require('twitter');
+var spotify = require('spotify');
+var omdb = require('omdb');
 
-
-//What it will do
+//What the command will tell the program to do
 function runTweets() {
-    console.log("runTweets");
+
     //intialize twitter client using the twitter pkg
+    var client = new Twitter({
+        consumer_key: keys.twitterKeys.consumer_key,
+        consumer_secret: keys.twitterKeys.consumer_secret,
+        access_token_key: keys.twitterKeys.access_token_key,
+        access_token_secret: keys.twitterKeys.access_token_secret
+    });
     //set up what we want to query
-    //capture the response
-    //format the response (save it into a var)
-    //display response
+    var params = { screen_name: 'ranchocinco' };
+
+    client.get('statuses/user_timeline', params, function(error, tweets, response) {
+        if (!error) {
+            // Raw response object/capture the response.
+            //console.log(tweets[0]);
+            for (var i = 0; i < 5; i++) {
+                //format & display the response 
+                console.log("My tweets: ", tweets[i].text);
+                console.log("Date Stamp: ", tweets[i].created_at);
+            }
+        } else {
+            console.log("Error occurred");
+        }
+    });
 }
 
 function spotifyThisSongWith(song) {
-    console.log("spotifyThisSongWith", song);
+
+    spotify.search({ type: 'track', query: 'dancing in the moonlight' }, function(err, data) {
+        if (err) {
+            console.log('Error occurred: ' + err);
+            return;
+        }
+
+        for (var i = 0; 1 < data.tracks.items.length; i++) {
+
+            for (var j = 0; j < data.tracks.items[i].album.artists.length; j++) {
+
+                console.log("Artist: ", data.tracks.items[i].album.artists[j].name);
+                console.log("Song's name: ", data.tracks.items[i].album.name);
+                console.log("Preview link: ", data.tracks.items[i].preview_url);
+                console.log("Album: ", data.tracks.items[i].album.name);
+            }
+        }
+    });
+
+    // console.log("spotifyThisSongWith", song);
 }
 
 function locateMovieInfoWith(title) {
